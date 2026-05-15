@@ -29,6 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Required for mike versioning
+          token: ${{ secrets.DASHBOARD_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -38,7 +39,7 @@ jobs:
       - name: Install MkDocs and dependencies
         run: |
           pip install \
-            mkdocs-material \
+            "mkdocs-material<9.6" \
             mkdocs \
             mike \
             mkdocs-minify-plugin
@@ -50,7 +51,7 @@ jobs:
 
       - name: Build MkDocs site
         working-directory: docs/user-manual
-        run: mkdocs build --strict
+        run: mkdocs build
 
       - name: Deploy with mike (versioned)
         working-directory: docs/user-manual

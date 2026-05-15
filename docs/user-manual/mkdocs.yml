@@ -24,7 +24,6 @@ plugins:
 nav:
   - หน้าแรก: index.md
   - เริ่มต้นใช้งาน: getting-started.md
-  - ฟีเจอร์: features/
   - Change Log: change-log.md
   - FAQ: faq.md
   - คำศัพท์: glossary.md
