@@ -1,0 +1,189 @@
+name: Sync to Jira
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**/*.md'
+
+  workflow_dispatch:
+    inputs:
+      force_sync:
+        description: 'Force sync all approved documents'
+        type: boolean
+        default: false
+
+jobs:
+  sync-jira:
+    name: Sync Approved Documents to Jira
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install PyYAML requests
+
+      - name: Get changed files with status changes
+        id: detect-changes
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'docs/**/*.md' 2>/dev/null || git diff --name-only HEAD -- 'docs/**/*.md')
+          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Sync to Jira
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_BASE_URL: https://snocko-main.atlassian.net
+          JIRA_PROJECT_KEY: PTL
+          PR_URL: ${{ github.event.head_commit.url }}
+          CHANGED_FILES: ${{ steps.detect-changes.outputs.changed_files }}
+          FORCE_SYNC: ${{ inputs.force_sync || 'false' }}
+        run: |
+          python3 << 'PYTHON_SCRIPT'
+          import os
+          import sys
+          import json
+          import yaml
+          import requests
+          from base64 import b64encode
+
+          jira_token = os.environ.get('JIRA_API_TOKEN', '')
+          jira_email = os.environ.get('JIRA_USER_EMAIL', '')
+          jira_base_url = os.environ.get('JIRA_BASE_URL', 'https://snocko-main.atlassian.net')
+          jira_project = os.environ.get('JIRA_PROJECT_KEY', 'PTL')
+          pr_url = os.environ.get('PR_URL', '')
+          changed_files_str = os.environ.get('CHANGED_FILES', '')
+          force_sync = os.environ.get('FORCE_SYNC', 'false').lower() == 'true'
+
+          if not jira_token or not jira_email:
+              print("WARNING: JIRA_API_TOKEN or JIRA_USER_EMAIL not set. Skipping Jira sync.")
+              sys.exit(0)
+
+          # Auth header
+          credentials = b64encode(f"{jira_email}:{jira_token}".encode()).decode()
+          headers = {
+              'Authorization': f'Basic {credentials}',
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+          }
+
+          # Status mapping
+          SYNC_STATUSES = {'approved', 'final', 'rejected'}
+          STATUS_TO_JIRA = {
+              'approved': 'Approved',
+              'final': 'Done',
+              'rejected': 'Rejected',
+          }
+
+          def extract_frontmatter(filepath):
+              try:
+                  with open(filepath, 'r', encoding='utf-8') as f:
+                      content = f.read()
+                  if not content.startswith('---'):
+                      return None
+                  parts = content.split('---', 2)
+                  if len(parts) < 3:
+                      return None
+                  return yaml.safe_load(parts[1])
+              except Exception:
+                  return None
+
+          def post_jira_comment(issue_key, comment_body):
+              url = f"{jira_base_url}/rest/api/3/issue/{issue_key}/comment"
+              payload = {
+                  "body": {
+                      "type": "doc",
+                      "version": 1,
+                      "content": [{
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": comment_body}]
+                      }]
+                  }
+              }
+              resp = requests.post(url, headers=headers, json=payload)
+              return resp.status_code == 201
+
+          def update_jira_issue_status(issue_key, target_status):
+              # Get available transitions
+              url = f"{jira_base_url}/rest/api/3/issue/{issue_key}/transitions"
+              resp = requests.get(url, headers=headers)
+              if resp.status_code != 200:
+                  return False
+              transitions = resp.json().get('transitions', [])
+              # Find matching transition
+              for transition in transitions:
+                  if transition['to']['name'].lower() == target_status.lower():
+                      transition_id = transition['id']
+                      payload = {"transition": {"id": transition_id}}
+                      t_resp = requests.post(url, headers=headers, json=payload)
+                      return t_resp.status_code == 204
+              return False
+
+          # Determine files to sync
+          if force_sync:
+              import subprocess
+              result = subprocess.run(['find', 'docs', '-name', '*.md'], capture_output=True, text=True)
+              files_to_check = [f.strip() for f in result.stdout.strip().split('\n') if f.strip()]
+          else:
+              files_to_check = [f.strip() for f in changed_files_str.strip().split('\n') if f.strip() and f.endswith('.md')]
+
+          sync_results = {'success': 0, 'skipped': 0, 'errors': 0}
+
+          for filepath in files_to_check:
+              if not os.path.exists(filepath):
+                  continue
+              fm = extract_frontmatter(filepath)
+              if not fm:
+                  continue
+              status = str(fm.get('status', ''))
+              if status not in SYNC_STATUSES:
+                  sync_results['skipped'] += 1
+                  continue
+
+              jira_issue = fm.get('jira_issue') or fm.get('related_jira')
+              if not jira_issue:
+                  print(f"  SKIP: {filepath} — no jira_issue in frontmatter")
+                  sync_results['skipped'] += 1
+                  continue
+
+              doc_title = fm.get('title', filepath)
+              version = fm.get('version', 'N/A')
+              jira_status = STATUS_TO_JIRA.get(status, status)
+
+              print(f"  Syncing: {filepath} → {jira_issue} (status: {status})")
+
+              # Post comment
+              comment = (
+                  f"Document status updated to '{status}' in GitHub.\n\n"
+                  f"Document: {doc_title}\n"
+                  f"Version: {version}\n"
+                  f"Path: {filepath}\n"
+                  f"Commit: {pr_url}\n\n"
+                  f"_Auto-synced by PT Leasing SDLC Framework_"
+              )
+              if post_jira_comment(jira_issue, comment):
+                  sync_results['success'] += 1
+                  print(f"    Comment posted to {jira_issue}")
+              else:
+                  sync_results['errors'] += 1
+                  print(f"    Failed to post comment to {jira_issue}")
+
+          print(f"\nSync complete: {sync_results['success']} success, {sync_results['skipped']} skipped, {sync_results['errors']} errors")
+
+          # Write sync errors
+          if sync_results['errors'] > 0:
+              with open('dashboard/data/sync-errors.json', 'w') as f:
+                  json.dump({'last_run': 'check logs', 'errors': sync_results['errors']}, f)
+          PYTHON_SCRIPT

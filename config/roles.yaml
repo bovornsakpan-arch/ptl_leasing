@@ -1,0 +1,163 @@
+# Role Definitions and Permissions for PT Leasing SDLC Framework
+# ========================================================
+# กำหนด role ต่าง ๆ ในโปรเจกต์ พร้อม description และสิทธิ์การแก้ไขไฟล์
+
+roles:
+  PM:
+    display_name: Project Manager
+    description: บริหารโปรเจกต์ ดูแล scope, timeline, budget และ stakeholder management
+    can_manage_roles: true  # Only PM can manage roles and users
+    can_approve_all: true
+    editable_paths:
+      - "**"  # Full access to all files
+    excluded_paths: []
+    responsibilities:
+      - Project planning and tracking
+      - Stakeholder communication
+      - Risk management
+      - Team coordination
+      - Final approval authority
+
+  BA:
+    display_name: Business Analyst
+    description: วิเคราะห์ความต้องการทางธุรกิจ เขียน BRD, requirements, user stories
+    can_manage_roles: false
+    can_approve_all: false
+    editable_paths:
+      - "docs/00-discovery/01-requirements/**"
+      - "docs/00-discovery/02-design/business/**"
+      - "docs/00-discovery/04-breakdown/STORIES.md"
+      - "docs/user-manual/docs/**"
+      - "config/feature-versions.yaml"
+      - "templates/BRD-*.template.md"
+      - "templates/ACCEPTANCE_CRITERIA.template.md"
+    responsibilities:
+      - Requirements elicitation and documentation
+      - Business flow design
+      - User stories and acceptance criteria
+      - Stakeholder interviews
+      - User manual maintenance
+
+  UXUI:
+    display_name: UX/UI Designer
+    description: ออกแบบประสบการณ์ผู้ใช้และ interface ทำงานร่วมกับ BA และ Dev
+    can_manage_roles: false
+    can_approve_all: false
+    editable_paths:
+      - "docs/00-discovery/02-design/uxui/**"
+      - "docs/00-discovery/03-validation/validation-uxui.md"
+      - "templates/USER_MANUAL_PAGE.template.md"
+    responsibilities:
+      - UX research and wireframing
+      - UI design and prototyping
+      - Design system and tokens
+      - Figma file management
+      - Design validation sessions
+
+  SA:
+    display_name: System Analyst
+    description: วิเคราะห์และออกแบบระบบ ทำ system design, API spec, data model
+    can_manage_roles: false
+    can_approve_all: false
+    editable_paths:
+      - "docs/00-discovery/02-design/system/**"
+      - "docs/00-discovery/02-design/architecture/**"
+      - "docs/00-discovery/03-validation/validation-architecture.md"
+      - "docs/00-discovery/03-validation/validation-system.md"
+      - "templates/SRS.template.md"
+      - "templates/ARCHITECTURE.template.md"
+      - "templates/ADR.template.md"
+    responsibilities:
+      - System design and architecture
+      - API specification
+      - Data model design
+      - Sequence diagrams
+      - Architecture Decision Records
+
+  Techlead:
+    display_name: Tech Lead
+    description: นำทีมเทคนิค review code, กำหนด technical standards และ best practices
+    can_manage_roles: false
+    can_approve_all: false
+    editable_paths:
+      - "docs/00-discovery/02-design/architecture/**"
+      - "docs/00-discovery/02-design/system/**"
+      - "docs/00-discovery/04-breakdown/**"
+      - "docs/00-discovery/05-ready-for-develop/**"
+      - "templates/ARCHITECTURE.template.md"
+      - "templates/ADR.template.md"
+    responsibilities:
+      - Technical architecture review
+      - Code review standards
+      - Technology decisions
+      - Dev team guidance
+      - Story/task estimation oversight
+
+  Dev:
+    display_name: Developer
+    description: พัฒนาซอฟต์แวร์ ทำงานตาม stories และ tasks ที่กำหนด
+    can_manage_roles: false
+    can_approve_all: false
+    editable_paths:
+      - "docs/00-discovery/04-breakdown/**"
+      - "docs/00-discovery/05-ready-for-develop/HANDOFF_TO_DEV.md"
+    responsibilities:
+      - Software development
+      - Unit testing
+      - Code review participation
+      - Technical documentation
+
+  Tester:
+    display_name: Tester / QA Engineer
+    description: ทดสอบระบบ เขียน test cases, รายงาน bugs
+    can_manage_roles: false
+    can_approve_all: false
+    editable_paths:
+      - "docs/00-discovery/02-design/testing/**"
+      - "docs/00-discovery/03-validation/validation-testing.md"
+      - "templates/TEST_CASE.template.md"
+      - "templates/ACCEPTANCE_CRITERIA.template.md"
+    responsibilities:
+      - Test case writing
+      - Test execution
+      - Bug reporting and tracking
+      - Test documentation
+
+  TesterLead:
+    display_name: Tester Lead / QA Lead
+    description: นำทีม QA กำหนด test strategy และ quality standards
+    can_manage_roles: false
+    can_approve_all: false
+    editable_paths:
+      - "docs/00-discovery/02-design/testing/**"
+      - "docs/00-discovery/03-validation/validation-testing.md"
+      - "docs/00-discovery/04-breakdown/**"
+      - "templates/TEST_CASE.template.md"
+    responsibilities:
+      - Test strategy definition
+      - Test team management
+      - Quality gate enforcement
+      - Test coverage oversight
+
+  Infra:
+    display_name: Infrastructure Engineer
+    description: ดูแลโครงสร้างพื้นฐาน server, network, deployment pipeline
+    can_manage_roles: false
+    can_approve_all: false
+    editable_paths:
+      - "docs/00-discovery/02-design/architecture/TECH_STACK.md"
+      - "docs/00-discovery/02-design/security/**"
+      - "docs/iso27001/**"
+    responsibilities:
+      - Server and cloud infrastructure
+      - CI/CD pipeline setup
+      - Security infrastructure
+      - Monitoring and logging
+      - Backup and disaster recovery
+
+# Protected files — only PM can modify
+protected_files:
+  - "config/roles.yaml"
+  - "config/users.yaml"
+  - ".github/CODEOWNERS"
+  - ".github/workflows/validate-roles.yml"

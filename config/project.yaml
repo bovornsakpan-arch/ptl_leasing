@@ -1,0 +1,41 @@
+project:
+  name: PT Leasing
+  code: PTL
+  description: ระบบ backoffice สำหรับธุรกิจลีสซิ่ง
+  repository: https://github.com/bovornsakpan-arch/ptl_leasing.git
+  classification: internal
+  figma_workspace: https://www.figma.com/files/project/587761135
+  github_pages: true
+  created_date: 2026-05-15
+  pm_email: bovornsak.pan@snocko-tech.com
+
+framework:
+  version: "0.1.0"
+  sdlc_type: discovery_driven
+  phases_count: 5
+  document_versioning: semantic  # major.minor.patch
+
+tracking:
+  primary: jira
+  config_file: config/tracking.yaml
+
+dashboard:
+  path: dashboard/index.html
+  data_file: dashboard/data/status.json
+  auto_refresh_minutes: 5
+
+user_manual:
+  type: mkdocs
+  config_file: docs/user-manual/mkdocs.yml
+  deploy_path: /manual/
+
+iso27001:
+  enabled: true
+  docs_path: docs/iso27001/
+  required_docs:
+    - RISK_REGISTER.md
+    - SECURITY_CONTROLS.md
+    - ASSET_INVENTORY.md
+    - ACCESS_CONTROL_POLICY.md
+    - INCIDENT_RESPONSE.md
+    - BUSINESS_CONTINUITY.md

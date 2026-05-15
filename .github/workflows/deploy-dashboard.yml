@@ -1,0 +1,78 @@
+name: Deploy PM Dashboard
+
+on:
+  workflow_run:
+    workflows: ["Update Dashboard Status"]
+    types:
+      - completed
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+    paths:
+      - 'dashboard/**'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy-dashboard:
+    name: Deploy Dashboard to GitHub Pages
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare dashboard for deployment
+        run: |
+          mkdir -p _site/dashboard
+          cp -r dashboard/* _site/dashboard/
+          # Create a root index that redirects to dashboard
+          cat > _site/index.html << 'HTML'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="refresh" content="0; url=dashboard/index.html">
+            <title>PT Leasing — Redirecting...</title>
+          </head>
+          <body>
+            <p>Redirecting to <a href="dashboard/index.html">PT Leasing PM Dashboard</a>...</p>
+          </body>
+          </html>
+          HTML
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Post deployment summary
+        run: |
+          echo "### Dashboard Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Dashboard URL: ${{ steps.deployment.outputs.page_url }}dashboard/" >> $GITHUB_STEP_SUMMARY
+          echo "Deployed at: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY

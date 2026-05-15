@@ -1,0 +1,168 @@
+name: Validate Frontmatter
+
+on:
+  push:
+    paths:
+      - 'docs/**/*.md'
+      - 'templates/**/*.md'
+  pull_request:
+    paths:
+      - 'docs/**/*.md'
+      - 'templates/**/*.md'
+
+jobs:
+  validate-frontmatter:
+    name: Validate YAML Frontmatter in Markdown Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install PyYAML
+
+      - name: Validate frontmatter
+        run: |
+          python3 << 'PYTHON_SCRIPT'
+          import os
+          import re
+          import sys
+          import yaml
+
+          # Valid status values
+          VALID_STATUSES = {
+              'draft', 'in_review', 'approved', 'final', 'superseded', 'rejected'
+          }
+
+          # Valid document types
+          VALID_TYPES = {
+              'new_feature', 'change_request', 'brd', 'srs', 'gap_analysis',
+              'impact_analysis', 'architecture', 'adr', 'test_case', 'test_strategy',
+              'acceptance_criteria', 'security_design', 'validation', 'story',
+              'task', 'readiness', 'handoff', 'user_manual', 'design', 'requirements'
+          }
+
+          # Required fields for all docs with frontmatter
+          REQUIRED_FIELDS = ['doc_id', 'title', 'version', 'status', 'owner']
+
+          # Semver pattern
+          SEMVER_PATTERN = re.compile(r'^\d+\.\d+\.\d+$')
+
+          # Email pattern
+          EMAIL_PATTERN = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+
+          # Load valid owners from users.yaml
+          valid_owners = set()
+          users_file = 'config/users.yaml'
+          if os.path.exists(users_file):
+              with open(users_file, 'r', encoding='utf-8') as f:
+                  users_data = yaml.safe_load(f)
+                  if users_data and 'users' in users_data:
+                      for user in users_data['users']:
+                          valid_owners.add(user['email'])
+
+          errors = []
+          warnings = []
+          checked = 0
+          skipped = 0
+
+          def extract_frontmatter(content):
+              """Extract YAML frontmatter from markdown content."""
+              if not content.startswith('---'):
+                  return None
+              parts = content.split('---', 2)
+              if len(parts) < 3:
+                  return None
+              try:
+                  return yaml.safe_load(parts[1])
+              except yaml.YAMLError as e:
+                  return {'_parse_error': str(e)}
+
+          # Find all markdown files in docs/ and templates/
+          search_dirs = ['docs', 'templates']
+          for search_dir in search_dirs:
+              if not os.path.exists(search_dir):
+                  continue
+              for root, dirs, files in os.walk(search_dir):
+                  # Skip user-manual (MkDocs handles its own)
+                  if 'user-manual' in root:
+                      skipped += 1
+                      continue
+                  for filename in files:
+                      if not filename.endswith('.md'):
+                          continue
+                      filepath = os.path.join(root, filename)
+
+                      with open(filepath, 'r', encoding='utf-8') as f:
+                          content = f.read()
+
+                      # Skip files without frontmatter (README files etc.)
+                      if not content.startswith('---'):
+                          skipped += 1
+                          continue
+
+                      checked += 1
+                      fm = extract_frontmatter(content)
+
+                      if fm is None:
+                          warnings.append(f"  WARN: {filepath} — No frontmatter found")
+                          continue
+
+                      if '_parse_error' in fm:
+                          errors.append(f"  ERROR: {filepath} — Invalid YAML: {fm['_parse_error']}")
+                          continue
+
+                      # Check required fields
+                      for field in REQUIRED_FIELDS:
+                          if field not in fm or fm[field] is None or fm[field] == '':
+                              errors.append(f"  ERROR: {filepath} — Missing required field: '{field}'")
+
+                      # Validate status
+                      if 'status' in fm and fm['status'] not in VALID_STATUSES:
+                          errors.append(f"  ERROR: {filepath} — Invalid status '{fm['status']}'. Must be one of: {sorted(VALID_STATUSES)}")
+
+                      # Validate version format (semver)
+                      if 'version' in fm and fm['version']:
+                          version_str = str(fm['version'])
+                          if not SEMVER_PATTERN.match(version_str):
+                              errors.append(f"  ERROR: {filepath} — Version '{version_str}' does not follow semver (X.Y.Z)")
+
+                      # Validate owner is a valid email from users.yaml
+                      if 'owner' in fm and fm['owner']:
+                          owner = str(fm['owner'])
+                          if not EMAIL_PATTERN.match(owner):
+                              errors.append(f"  ERROR: {filepath} — Owner '{owner}' is not a valid email address")
+                          elif valid_owners and owner not in valid_owners:
+                              warnings.append(f"  WARN: {filepath} — Owner '{owner}' not found in config/users.yaml")
+
+                      # Validate type if present
+                      if 'type' in fm and fm['type'] and fm['type'] not in VALID_TYPES:
+                          warnings.append(f"  WARN: {filepath} — Unknown type '{fm['type']}'")
+
+          # Print results
+          print(f"\n=== Frontmatter Validation Report ===")
+          print(f"Files checked: {checked}")
+          print(f"Files skipped (no frontmatter): {skipped}")
+          print(f"Errors: {len(errors)}")
+          print(f"Warnings: {len(warnings)}")
+
+          if warnings:
+              print("\nWarnings:")
+              for w in warnings:
+                  print(w)
+
+          if errors:
+              print("\nErrors:")
+              for e in errors:
+                  print(e)
+              print(f"\nFrontmatter validation FAILED with {len(errors)} error(s)")
+              sys.exit(1)
+          else:
+              print("\nFrontmatter validation PASSED")
+          PYTHON_SCRIPT

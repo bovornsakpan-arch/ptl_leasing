@@ -1,0 +1,170 @@
+# Discovery Phases Configuration for PT Leasing SDLC
+# ===================================================
+# กำหนด 5 เฟสของ Discovery process พร้อม gate criteria และ SLA
+
+phases:
+  - id: "01-requirements"
+    name: Requirement Gathering
+    name_th: รวบรวมความต้องการ
+    number: 1
+    sla_days: 14
+    description: รวบรวมและเอกสารความต้องการทางธุรกิจ ทำความเข้าใจ stakeholders และ business context
+    folder: docs/00-discovery/01-requirements/
+    primary_role: BA
+    participating_roles: [PM, BA, SA]
+    deliverables:
+      - name: Epics Document
+        file: docs/00-discovery/01-requirements/EPICS.md
+        required: true
+      - name: Stakeholders Document
+        file: docs/00-discovery/01-requirements/stakeholders.md
+        required: true
+      - name: BRD (per Feature/CR)
+        file: "docs/00-discovery/01-requirements/new-features/{ID}/BRD.md"
+        required: true
+    gate_criteria:
+      - All stakeholders identified and documented
+      - Business objectives clearly stated
+      - Scope boundaries defined (in-scope / out-of-scope)
+      - At least 80% of requirements have priority assigned
+      - PM has approved BRD
+      - No unresolved critical ambiguities
+    next_phase: "02-design"
+    status: in_progress
+
+  - id: "02-design"
+    name: Make Design
+    name_th: ออกแบบระบบ
+    number: 2
+    sla_days: 21
+    description: ออกแบบทุกมิติ ได้แก่ business flow, UX/UI, system/architecture, security, และ test strategy
+    folder: docs/00-discovery/02-design/
+    primary_role: SA
+    participating_roles: [PM, BA, SA, UXUI, Techlead, Tester, Infra]
+    deliverables:
+      - name: Business Flow
+        file: docs/00-discovery/02-design/business/BUSINESS_FLOW.md
+        required: true
+      - name: UX/UI Design
+        file: docs/00-discovery/02-design/uxui/UXUI_DESIGN.md
+        required: true
+      - name: System Design
+        file: docs/00-discovery/02-design/system/SYSTEM_DESIGN.md
+        required: true
+      - name: Architecture
+        file: docs/00-discovery/02-design/architecture/ARCHITECTURE.md
+        required: true
+      - name: SRS (per Feature/CR)
+        file: "docs/00-discovery/01-requirements/new-features/{ID}/SRS.md"
+        required: true
+      - name: Test Strategy
+        file: docs/00-discovery/02-design/testing/TEST_STRATEGY.md
+        required: true
+      - name: Security Design
+        file: docs/00-discovery/02-design/security/SECURITY_DESIGN.md
+        required: true
+    gate_criteria:
+      - Business flow approved by BA and PM
+      - UX/UI wireframes in Figma
+      - System design reviewed by Techlead
+      - Architecture decisions documented in ADR
+      - API spec complete for all endpoints
+      - Test strategy reviewed by TesterLead
+      - Security design reviewed by Infra/SA
+    next_phase: "03-validation"
+    status: not_started
+
+  - id: "03-validation"
+    name: Validate Design
+    name_th: ตรวจสอบและยืนยันการออกแบบ
+    number: 3
+    sla_days: 7
+    description: ตรวจสอบและยืนยันผลลัพธ์จากการออกแบบกับ stakeholders ก่อนเริ่ม breakdown
+    folder: docs/00-discovery/03-validation/
+    primary_role: PM
+    participating_roles: [PM, BA, SA, UXUI, Techlead, TesterLead]
+    deliverables:
+      - name: Business Validation Sign-off
+        file: docs/00-discovery/03-validation/validation-business.md
+        required: true
+      - name: UX/UI Validation Sign-off
+        file: docs/00-discovery/03-validation/validation-uxui.md
+        required: true
+      - name: Architecture Validation Sign-off
+        file: docs/00-discovery/03-validation/validation-architecture.md
+        required: true
+      - name: System Validation Sign-off
+        file: docs/00-discovery/03-validation/validation-system.md
+        required: true
+      - name: Testing Strategy Sign-off
+        file: docs/00-discovery/03-validation/validation-testing.md
+        required: true
+      - name: Security Validation Sign-off
+        file: docs/00-discovery/03-validation/validation-security.md
+        required: true
+    gate_criteria:
+      - All 6 validation sessions conducted
+      - All sign-offs obtained from relevant roles
+      - No critical design issues outstanding
+      - Stakeholder sign-off documented
+    next_phase: "04-breakdown"
+    status: not_started
+
+  - id: "04-breakdown"
+    name: Story & Task Breakdown
+    name_th: แบ่ง Story และ Task
+    number: 4
+    sla_days: 7
+    description: แบ่ง requirements เป็น user stories และ tasks ที่ชัดเจน พร้อม estimates
+    folder: docs/00-discovery/04-breakdown/
+    primary_role: BA
+    participating_roles: [PM, BA, SA, Techlead, Dev, TesterLead]
+    deliverables:
+      - name: Stories Document
+        file: docs/00-discovery/04-breakdown/STORIES.md
+        required: true
+      - name: Tasks Breakdown
+        file: docs/00-discovery/04-breakdown/TASKS.md
+        required: true
+      - name: Traceability Matrix
+        file: docs/00-discovery/04-breakdown/TRACEABILITY_MATRIX.md
+        required: true
+      - name: Acceptance Criteria (per Feature/CR)
+        file: "docs/00-discovery/01-requirements/new-features/{ID}/ACCEPTANCE_CRITERIA.md"
+        required: true
+    gate_criteria:
+      - All stories have acceptance criteria
+      - All stories have story point estimates
+      - Traceability from REQ → Design → Story → Test complete
+      - Stories synced to Jira
+      - Dev team has reviewed and acknowledged all stories
+    next_phase: "05-ready"
+    status: not_started
+
+  - id: "05-ready"
+    name: Ready for Develop
+    name_th: พร้อมพัฒนา
+    number: 5
+    sla_days: 3
+    description: ตรวจสอบ readiness checklist และ handoff เอกสารให้ทีม Dev ก่อนเริ่ม sprint แรก
+    folder: docs/00-discovery/05-ready-for-develop/
+    primary_role: PM
+    participating_roles: [PM, BA, SA, Techlead, Dev]
+    deliverables:
+      - name: Readiness Checklist
+        file: docs/00-discovery/05-ready-for-develop/READINESS_CHECKLIST.md
+        required: true
+      - name: Dev Handoff Document
+        file: docs/00-discovery/05-ready-for-develop/HANDOFF_TO_DEV.md
+        required: true
+    gate_criteria:
+      - Readiness checklist 100% complete
+      - Dev environment setup documented
+      - All questions from dev team answered
+      - First sprint planned in Jira
+      - PM final sign-off obtained
+    next_phase: null  # End of Discovery — Development begins
+    status: not_started
+
+# Total SLA: 14 + 21 + 7 + 7 + 3 = 52 days
+total_sla_days: 52

@@ -1,0 +1,52 @@
+# Feature Version Registry for PT Leasing
+# =========================================
+# Registry นี้ใช้ติดตาม version ของแต่ละ feature และ change request
+#
+# Usage:
+#   - BA อัปเดตไฟล์นี้เมื่อมีการ approve feature หรือ CR
+#   - ใช้เพื่อ audit trail และ impact analysis
+#   - format: MAJOR.MINOR.PATCH (semver)
+#     - MAJOR: breaking change หรือ redesign ใหญ่
+#     - MINOR: เพิ่ม functionality ใหม่
+#     - PATCH: แก้ไขเล็กน้อย, typo, clarification
+#
+# Schema ของแต่ละ entry:
+#   id: F-XXX หรือ CR-XXX
+#   type: new_feature | change_request
+#   name: ชื่อ feature
+#   current_version: "X.Y.Z"
+#   status: draft | in_review | approved | final
+#   epic: EPIC-XX (optional)
+#   related_jira: PTL-XXX
+#   history:
+#     - version: "X.Y.Z"
+#       date: YYYY-MM-DD
+#       changed_by: email
+#       summary: สรุปการเปลี่ยนแปลง
+# =========================================
+
+features: []
+
+# Example entry (uncomment to use):
+# features:
+#   - id: F-001
+#     type: new_feature
+#     name: User Authentication
+#     current_version: "1.0.0"
+#     status: draft
+#     epic: EPIC-01
+#     related_jira: PTL-1
+#     history:
+#       - version: "0.1.0"
+#         date: 2026-05-15
+#         changed_by: orawan.nus@snocko-tech.com
+#         summary: Initial draft
+#       - version: "1.0.0"
+#         date: 2026-05-20
+#         changed_by: orawan.nus@snocko-tech.com
+#         summary: Approved after review session
+
+change_requests: []
+
+# Last updated: 2026-05-15
+# Updated by: System (initial setup)

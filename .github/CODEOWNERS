@@ -1,0 +1,34 @@
+# Auto-generated from config/users.yaml + config/roles.yaml
+# PT Leasing SDLC Framework
+# Last updated: 2026-05-15
+#
+# PM has final approval authority on all files
+
+# PM has full access
+* @bovornsakpan-arch
+
+# BA: Requirements, Business design, User Manual
+docs/00-discovery/01-requirements/** @orawan-nus
+docs/00-discovery/02-design/business/** @orawan-nus
+docs/user-manual/docs/** @orawan-nus
+config/feature-versions.yaml @orawan-nus
+
+# SA: System design, Architecture
+docs/00-discovery/02-design/system/** @siriporn-san @thamonwan-san
+docs/00-discovery/02-design/architecture/** @siriporn-san @thamonwan-san
+docs/00-discovery/03-validation/validation-architecture.md @siriporn-san @thamonwan-san
+docs/00-discovery/03-validation/validation-system.md @siriporn-san @thamonwan-san
+
+# Config files: PM only
+config/roles.yaml @bovornsakpan-arch
+config/users.yaml @bovornsakpan-arch
+.github/CODEOWNERS @bovornsakpan-arch
+.github/workflows/validate-roles.yml @bovornsakpan-arch
+
+# Security and ISO27001: all SA + PM
+docs/00-discovery/02-design/security/** @siriporn-san @thamonwan-san @bovornsakpan-arch
+docs/iso27001/** @siriporn-san @thamonwan-san @bovornsakpan-arch
+
+# Dashboard and scripts: PM only
+dashboard/** @bovornsakpan-arch
+scripts/** @bovornsakpan-arch

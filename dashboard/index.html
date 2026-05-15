@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PT Leasing — PM Dashboard</title>
+  <link rel="stylesheet" href="assets/dashboard.css">
+  <!-- Chart.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h2>PT Leasing</h2>
+      <p>PM Dashboard v0.1.0</p>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-section="overview">
+        <span class="nav-icon">📊</span> Overview
+      </button>
+      <button class="nav-item" data-section="phases">
+        <span class="nav-icon">🔄</span> Phase Progress
+      </button>
+      <button class="nav-item" data-section="documents">
+        <span class="nav-icon">📄</span> Documents
+      </button>
+      <button class="nav-item" data-section="sla">
+        <span class="nav-icon">⏱️</span> SLA Tracking
+      </button>
+      <button class="nav-item" data-section="iso">
+        <span class="nav-icon">🔒</span> ISO27001
+      </button>
+      <button class="nav-item" data-section="activity">
+        <span class="nav-icon">📋</span> Activity
+      </button>
+      <button class="nav-item" data-section="risks">
+        <span class="nav-icon">⚠️</span> Risk Heat Map
+      </button>
+      <button class="nav-item" data-section="workload">
+        <span class="nav-icon">👥</span> Workload
+      </button>
+      <button class="nav-item" data-section="velocity">
+        <span class="nav-icon">🚀</span> Velocity
+      </button>
+    </nav>
+    <div style="padding:16px;font-size:11px;color:#64748B;border-top:1px solid rgba(255,255,255,0.1)">
+      <div>Jira: <a href="https://snocko-main.atlassian.net/jira/software/projects/PTL/" target="_blank" style="color:#94A3B8">PTL Board</a></div>
+      <div style="margin-top:4px">Figma: <a href="https://www.figma.com/files/project/587761135" target="_blank" style="color:#94A3B8">Design Files</a></div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="topbar-title">PT Leasing — PM Dashboard</div>
+      <div class="topbar-meta">
+        <span class="last-updated" id="last-updated">Loading...</span>
+        <button class="refresh-btn" id="refresh-btn">⟳ Refresh</button>
+      </div>
+    </div>
+
+    <!-- Filters Bar -->
+    <div class="filters-bar">
+      <span class="filter-label">Filter:</span>
+      <select class="filter-select" id="filter-phase">
+        <option value="all">All Phases</option>
+        <option value="01-requirements">Phase 1: Requirements</option>
+        <option value="02-design">Phase 2: Design</option>
+        <option value="03-validation">Phase 3: Validation</option>
+        <option value="04-breakdown">Phase 4: Breakdown</option>
+        <option value="05-ready">Phase 5: Ready</option>
+      </select>
+      <select class="filter-select" id="filter-role">
+        <option value="all">All Roles</option>
+        <option value="pm">PM</option>
+        <option value="ba">BA</option>
+        <option value="sa">SA</option>
+      </select>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content" id="dashboard-content">
+
+      <!-- ── SECTION: Overview ── -->
+      <div id="section-overview">
+
+        <!-- Stat Cards -->
+        <div class="stat-cards" style="margin-bottom:24px">
+          <div class="stat-card primary">
+            <div class="stat-card-label">Current Phase</div>
+            <div class="stat-card-value" id="stat-phase">–</div>
+            <div class="stat-card-sub" id="stat-phase-name"></div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-card-label">Overall Progress</div>
+            <div class="stat-card-value" id="stat-overall-progress">–</div>
+            <div class="stat-card-sub">of discovery complete</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-card-label">Documents</div>
+            <div class="stat-card-value" id="stat-total-docs">–</div>
+            <div class="stat-card-sub"><span id="stat-approved-docs">0</span> approved</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">ISO27001 Score</div>
+            <div class="stat-card-value" id="stat-iso-score">–</div>
+            <div class="stat-card-sub">compliance</div>
+          </div>
+        </div>
+
+        <!-- Row 1: Phase Progress + Activity -->
+        <div class="grid-12" style="margin-bottom:20px">
+
+          <div class="card col-8" id="section-phases">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">🔄</span> Phase Progress / ความคืบหน้าแต่ละ Phase</div>
+            </div>
+            <div class="card-body">
+              <div id="phase-progress-list" class="phase-list">
+                <div class="loading"><div class="spinner"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card col-4" id="section-activity">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">📋</span> Recent Activity</div>
+            </div>
+            <div class="card-body" style="padding:0 20px">
+              <div id="activity-list" class="activity-list"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Row 2: Doc Status Chart + CR vs Feature -->
+        <div class="grid-12" style="margin-bottom:20px" id="section-documents">
+
+          <div class="card col-4">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">📄</span> Document Approval Status</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height:220px">
+                <canvas id="doc-status-chart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card col-4">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">🔀</span> CR vs New Feature</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height:220px">
+                <canvas id="cr-feature-chart"></canvas>
+              </div>
+              <div style="text-align:center;font-size:12px;color:var(--color-text-muted);margin-top:8px" id="cr-feature-total"></div>
+            </div>
+          </div>
+
+          <div class="card col-4">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">🔒</span> ISO27001 Compliance</div>
+            </div>
+            <div class="card-body">
+              <div class="compliance-gauge">
+                <div class="gauge-number" id="iso-score-number">–</div>
+                <div class="gauge-label">Compliance Score</div>
+                <div class="gauge-sub"><span id="iso-approved">0</span> / <span id="iso-required">6</span> required docs approved</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Row 3: SLA Table + Stale Docs -->
+        <div class="grid-12" style="margin-bottom:20px" id="section-sla">
+
+          <div class="card col-8">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">⏱️</span> SLA Tracking / ติดตาม SLA</div>
+            </div>
+            <div class="card-body" style="padding:0">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Phase</th>
+                    <th>SLA</th>
+                    <th>Elapsed</th>
+                    <th>Remaining</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="sla-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card col-4" id="section-iso">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">📂</span> Stale Documents</div>
+            </div>
+            <div class="card-body" style="padding:8px 20px">
+              <div id="stale-docs-list"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Row 4: Workload + Burndown -->
+        <div class="grid-12" style="margin-bottom:20px" id="section-workload">
+
+          <div class="card col-6">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">👥</span> Resource / Role Workload</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height:200px">
+                <canvas id="workload-chart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card col-6">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">📉</span> Burndown Chart</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height:200px">
+                <canvas id="burndown-chart"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Row 5: Sign-off Velocity + Bottleneck -->
+        <div class="grid-12" style="margin-bottom:20px" id="section-velocity">
+
+          <div class="card col-6">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">🚀</span> Sign-off Velocity</div>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;gap:24px;margin-bottom:16px">
+                <div>
+                  <div style="font-size:12px;color:var(--color-text-secondary)">Avg Approval Time</div>
+                  <div style="font-size:22px;font-weight:700;color:var(--color-primary)" id="velocity-avg">–</div>
+                </div>
+                <div>
+                  <div style="font-size:12px;color:var(--color-text-secondary)">Pending Sign-offs</div>
+                  <div style="font-size:22px;font-weight:700;color:var(--color-warning)" id="velocity-pending">–</div>
+                </div>
+              </div>
+              <div class="chart-container" style="height:150px">
+                <canvas id="velocity-chart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card col-6">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">🚧</span> Bottleneck Tracker</div>
+            </div>
+            <div class="card-body" style="padding:8px 20px">
+              <div id="bottleneck-list"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Row 6: Risk Heat Map -->
+        <div class="grid-12" id="section-risks">
+          <div class="card col-12">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">⚠️</span> Risk Heat Map / แผนที่ความเสี่ยง</div>
+              <a href="../docs/iso27001/RISK_REGISTER.md" style="font-size:12px;color:var(--color-primary)">Full Register →</a>
+            </div>
+            <div class="card-body" style="padding:0">
+              <table class="data-table risk-table">
+                <thead>
+                  <tr>
+                    <th>Risk ID</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Score</th>
+                    <th>Level</th>
+                  </tr>
+                </thead>
+                <tbody id="risk-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end section-overview -->
+
+    </div><!-- end dashboard-content -->
+  </main>
+</div>
+
+<script src="assets/dashboard.js"></script>
+</body>
+</html>

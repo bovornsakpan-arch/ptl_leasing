@@ -1,0 +1,67 @@
+name: Build and Deploy User Manual
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/user-manual/**'
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g. 1.0)'
+        required: false
+        default: 'latest'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-manual:
+    name: Build MkDocs User Manual
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for mike versioning
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install MkDocs and dependencies
+        run: |
+          pip install \
+            mkdocs-material \
+            mkdocs \
+            mike \
+            mkdocs-minify-plugin
+
+      - name: Configure Git for mike deploy
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Build MkDocs site
+        working-directory: docs/user-manual
+        run: mkdocs build --strict
+
+      - name: Deploy with mike (versioned)
+        working-directory: docs/user-manual
+        run: |
+          VERSION="${{ inputs.version || 'latest' }}"
+          mike deploy --push --update-aliases "$VERSION" latest
+          mike set-default --push latest
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-manual-site
+          path: docs/user-manual/site/
+          retention-days: 7

@@ -1,0 +1,501 @@
+{
+  "generated_at": "2026-05-15T14:24:00Z",
+  "project": {
+    "name": "PT Leasing",
+    "code": "PTL",
+    "current_phase": "01-requirements",
+    "current_substep": "1.1 Requirement Gathering",
+    "overall_progress": 0.03
+  },
+  "phases": [
+    {
+      "id": "01-requirements",
+      "name": "Requirement Gathering",
+      "progress": 0.0,
+      "status": "in_progress",
+      "sla_days": 14
+    },
+    {
+      "id": "02-design",
+      "name": "Make Design",
+      "progress": 0.05,
+      "status": "not_started",
+      "sla_days": 21
+    },
+    {
+      "id": "03-validation",
+      "name": "Validate Design",
+      "progress": 0.0,
+      "status": "not_started",
+      "sla_days": 7
+    },
+    {
+      "id": "04-breakdown",
+      "name": "Story & Task Breakdown",
+      "progress": 0.0,
+      "status": "not_started",
+      "sla_days": 7
+    },
+    {
+      "id": "05-ready",
+      "name": "Ready for Develop",
+      "progress": 0.0,
+      "status": "not_started",
+      "sla_days": 3
+    }
+  ],
+  "documents": [
+    {
+      "doc_id": "PTL-STK-001",
+      "title": "Stakeholders — PT Leasing Backoffice",
+      "type": "requirements",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/01-requirements/stakeholders.md",
+      "phase": "01-requirements",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-EPICS-001",
+      "title": "Epics — PT Leasing Backoffice",
+      "type": "requirements",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/01-requirements/EPICS.md",
+      "phase": "01-requirements",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-VAL-SYSTEM",
+      "title": "Validation: System Design",
+      "type": "validation",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/03-validation/validation-system.md",
+      "phase": "03-validation",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-VAL-BUSINESS",
+      "title": "Validation: Business Design",
+      "type": "validation",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/03-validation/validation-business.md",
+      "phase": "03-validation",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-VAL-SECURITY",
+      "title": "Validation: Security Design",
+      "type": "validation",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/03-validation/validation-security.md",
+      "phase": "03-validation",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-VAL-TESTING",
+      "title": "Validation: Testing Design",
+      "type": "validation",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/03-validation/validation-testing.md",
+      "phase": "03-validation",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-VAL-UXUI",
+      "title": "Validation: Uxui Design",
+      "type": "validation",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/03-validation/validation-uxui.md",
+      "phase": "03-validation",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-VAL-ARCHITECTURE",
+      "title": "Validation: Architecture Design",
+      "type": "validation",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/03-validation/validation-architecture.md",
+      "phase": "03-validation",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-READY-001",
+      "title": "Readiness Checklist — PT Leasing",
+      "type": "readiness",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "bovornsak.pan@snocko-tech.com",
+      "path": "docs/00-discovery/05-ready-for-develop/READINESS_CHECKLIST.md",
+      "phase": "05-ready",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-HANDOFF-001",
+      "title": "Dev Handoff Document — PT Leasing",
+      "type": "handoff",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "bovornsak.pan@snocko-tech.com",
+      "path": "docs/00-discovery/05-ready-for-develop/HANDOFF_TO_DEV.md",
+      "phase": "05-ready",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-DPIA-001",
+      "title": "DPIA — PT Leasing Backoffice",
+      "type": "security_design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/security/DPIA.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-DC-001",
+      "title": "Data Classification — PT Leasing",
+      "type": "security_design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/security/DATA_CLASSIFICATION.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-SEC-001",
+      "title": "Security Design — PT Leasing",
+      "type": "security_design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/security/SECURITY_DESIGN.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-TH-001",
+      "title": "Threat Model — PT Leasing",
+      "type": "security_design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/security/THREAT_MODEL.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-BF-001",
+      "title": "Business Flow — PT Leasing Backoffice",
+      "type": "design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/business/BUSINESS_FLOW.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-UXUI-001",
+      "title": "UX/UI Design — PT Leasing Backoffice",
+      "type": "design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/uxui/UXUI_DESIGN.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-FIGMA-001",
+      "title": "Figma Links — PT Leasing",
+      "type": "design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/uxui/figma-links.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-DT-001",
+      "title": "Design Tokens — PT Leasing",
+      "type": "design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/uxui/design-tokens.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-TM-001",
+      "title": "Test Matrix — PT Leasing",
+      "type": "test_case",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/testing/test-matrix.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-TC-MASTER",
+      "title": "Test Cases Master List — PT Leasing",
+      "type": "test_case",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/testing/TEST_CASES.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-TS-001",
+      "title": "Test Strategy — PT Leasing",
+      "type": "test_strategy",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/testing/TEST_STRATEGY.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-SEQ-001",
+      "title": "Sequence Diagrams — PT Leasing",
+      "type": "design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/system/SEQUENCE_DIAGRAMS.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-SYS-001",
+      "title": "System Design — PT Leasing Backoffice",
+      "type": "design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/system/SYSTEM_DESIGN.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-API-001",
+      "title": "API Specification — PT Leasing",
+      "type": "design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/system/API_SPEC.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-SF-001",
+      "title": "System Flow — PT Leasing",
+      "type": "design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/system/SYSTEM_FLOW.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-ARCH-001",
+      "title": "System Architecture — PT Leasing Backoffice",
+      "type": "architecture",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/architecture/ARCHITECTURE.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-DS-001",
+      "title": "Data Structure — PT Leasing",
+      "type": "architecture",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/architecture/DATA_STRUCTURE.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-TECH-001",
+      "title": "Technology Stack — PT Leasing",
+      "type": "architecture",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/architecture/TECH_STACK.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-ADR-0001",
+      "title": "ADR-0001: Use Jira as Task Tracking System",
+      "type": "adr",
+      "status": "approved",
+      "version": "1.0.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/architecture/adr/ADR-0001-example.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-ADR-TEMPLATE",
+      "title": "ADR Template",
+      "type": "adr",
+      "status": "draft",
+      "version": "1.0.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/00-discovery/02-design/architecture/adr/ADR-template.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-TRACE-001",
+      "title": "Traceability Matrix — PT Leasing",
+      "type": "requirements",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/04-breakdown/TRACEABILITY_MATRIX.md",
+      "phase": "04-breakdown",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-TASKS-001",
+      "title": "Task Breakdown — PT Leasing",
+      "type": "requirements",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/04-breakdown/TASKS.md",
+      "phase": "04-breakdown",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-STORIES-001",
+      "title": "User Stories — PT Leasing",
+      "type": "requirements",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "orawan.nus@snocko-tech.com",
+      "path": "docs/00-discovery/04-breakdown/STORIES.md",
+      "phase": "04-breakdown",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-ISO-CTRL-001",
+      "title": "Security Controls — ISO27001:2022 Annex A",
+      "type": "security_design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/iso27001/SECURITY_CONTROLS.md",
+      "phase": "",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-ISO-RISK-001",
+      "title": "Risk Register — PT Leasing ISO27001",
+      "type": "security_design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/iso27001/RISK_REGISTER.md",
+      "phase": "02-design",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-ISO-IR-001",
+      "title": "Incident Response — PT Leasing",
+      "type": "security_design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/iso27001/INCIDENT_RESPONSE.md",
+      "phase": "",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-ISO-AC-001",
+      "title": "Access Control Policy — PT Leasing",
+      "type": "security_design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/iso27001/ACCESS_CONTROL_POLICY.md",
+      "phase": "",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-ISO-ASSET-001",
+      "title": "Asset Inventory — PT Leasing",
+      "type": "security_design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/iso27001/ASSET_INVENTORY.md",
+      "phase": "",
+      "updated_at": "2026-05-15"
+    },
+    {
+      "doc_id": "PTL-ISO-BCP-001",
+      "title": "Business Continuity Plan — PT Leasing",
+      "type": "security_design",
+      "status": "draft",
+      "version": "0.1.0",
+      "owner": "siriporn.san@snocko-tech.com",
+      "path": "docs/iso27001/BUSINESS_CONTINUITY.md",
+      "phase": "",
+      "updated_at": "2026-05-15"
+    }
+  ],
+  "document_counts": {
+    "draft": 38,
+    "in_review": 0,
+    "approved": 1,
+    "final": 0,
+    "superseded": 0,
+    "rejected": 0
+  },
+  "tasks": [],
+  "approvals": [],
+  "risks": [],
+  "compliance": {
+    "iso27001_score": 0.0,
+    "required_docs": 6,
+    "approved_docs": 0
+  },
+  "velocity": {
+    "avg_approve_days": null
+  },
+  "cr_vs_feature": {
+    "cr_count": 0,
+    "feature_count": 0
+  }
+}

@@ -1,0 +1,30 @@
+site_name: PT Leasing User Manual
+site_url: https://bovornsakpan-arch.github.io/ptl_leasing/manual/
+repo_url: https://github.com/bovornsakpan-arch/ptl_leasing
+repo_name: bovornsakpan-arch/ptl_leasing
+docs_dir: docs
+site_dir: site
+theme:
+  name: material
+  language: th
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+plugins:
+  - search
+  - mike:
+      version_selector: true
+nav:
+  - หน้าแรก: index.md
+  - เริ่มต้นใช้งาน: getting-started.md
+  - ฟีเจอร์: features/
+  - Change Log: change-log.md
+  - FAQ: faq.md
+  - คำศัพท์: glossary.md

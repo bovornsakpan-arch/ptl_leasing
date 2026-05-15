@@ -1,0 +1,199 @@
+name: Update Dashboard Status
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**/*.md'
+      - 'config/phases.yaml'
+
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual trigger'
+        required: false
+        default: 'Manual update'
+
+jobs:
+  update-status:
+    name: Aggregate Document Status and Update dashboard/data/status.json
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install PyYAML
+
+      - name: Aggregate document status
+        run: |
+          python3 << 'PYTHON_SCRIPT'
+          import os
+          import re
+          import json
+          import yaml
+          from datetime import datetime, timezone
+
+          VALID_STATUSES = ['draft', 'in_review', 'approved', 'final', 'superseded', 'rejected']
+
+          def extract_frontmatter(filepath):
+              """Extract YAML frontmatter from a markdown file."""
+              try:
+                  with open(filepath, 'r', encoding='utf-8') as f:
+                      content = f.read()
+                  if not content.startswith('---'):
+                      return None
+                  parts = content.split('---', 2)
+                  if len(parts) < 3:
+                      return None
+                  fm = yaml.safe_load(parts[1])
+                  fm['_filepath'] = filepath
+                  return fm
+              except Exception:
+                  return None
+
+          # Load project config
+          with open('config/project.yaml', 'r', encoding='utf-8') as f:
+              project_config = yaml.safe_load(f)
+
+          # Load phases config
+          with open('config/phases.yaml', 'r', encoding='utf-8') as f:
+              phases_config = yaml.safe_load(f)
+
+          # Load existing status.json
+          status_file = 'dashboard/data/status.json'
+          existing_status = {}
+          if os.path.exists(status_file):
+              with open(status_file, 'r', encoding='utf-8') as f:
+                  existing_status = json.load(f)
+
+          # Collect all documents with frontmatter
+          documents = []
+          for root, dirs, files in os.walk('docs'):
+              if 'user-manual' in root:
+                  continue
+              for filename in files:
+                  if not filename.endswith('.md'):
+                      continue
+                  filepath = os.path.join(root, filename)
+                  fm = extract_frontmatter(filepath)
+                  if fm and 'doc_id' in fm and 'status' in fm:
+                      documents.append({
+                          'doc_id': str(fm.get('doc_id', '')),
+                          'title': str(fm.get('title', filename)),
+                          'type': str(fm.get('type', 'unknown')),
+                          'status': str(fm.get('status', 'draft')),
+                          'version': str(fm.get('version', '0.1.0')),
+                          'owner': str(fm.get('owner', '')),
+                          'path': filepath,
+                          'phase': fm.get('phase', ''),
+                          'updated_at': fm.get('updated_at', ''),
+                      })
+
+          # Count by status
+          status_counts = {s: 0 for s in VALID_STATUSES}
+          for doc in documents:
+              s = doc.get('status', 'draft')
+              if s in status_counts:
+                  status_counts[s] += 1
+
+          # Calculate phase progress based on approved docs
+          phase_data = []
+          for phase in phases_config.get('phases', []):
+              phase_id = phase['id']
+              phase_docs = [d for d in documents if phase_id in d.get('path', '')]
+              total = len(phase_docs)
+              approved = sum(1 for d in phase_docs if d['status'] in ['approved', 'final'])
+              progress = round(approved / total, 2) if total > 0 else 0.0
+              phase_entry = {
+                  'id': phase_id,
+                  'name': phase['name'],
+                  'progress': progress,
+                  'status': phase.get('status', 'not_started'),
+                  'sla_days': phase.get('sla_days', 0),
+              }
+              if phase.get('started_date'):
+                  phase_entry['started_date'] = str(phase['started_date'])
+              phase_data.append(phase_entry)
+
+          # Calculate overall progress
+          total_docs = len(documents)
+          done_docs = sum(1 for d in documents if d['status'] in ['approved', 'final'])
+          overall_progress = round(done_docs / total_docs, 2) if total_docs > 0 else 0.0
+
+          # ISO27001 compliance
+          iso_required = ['RISK_REGISTER.md', 'SECURITY_CONTROLS.md', 'ASSET_INVENTORY.md',
+                          'ACCESS_CONTROL_POLICY.md', 'INCIDENT_RESPONSE.md', 'BUSINESS_CONTINUITY.md']
+          iso_docs = [d for d in documents if any(req in d['path'] for req in iso_required)]
+          iso_approved = sum(1 for d in iso_docs if d['status'] in ['approved', 'final'])
+          iso_score = round(iso_approved / len(iso_required), 2) if iso_required else 0.0
+
+          # CR vs Feature count
+          cr_count = sum(1 for d in documents if d.get('type') == 'change_request')
+          feature_count = sum(1 for d in documents if d.get('type') == 'new_feature')
+
+          # Find current phase
+          current_phase = '01-requirements'
+          for phase in phases_config.get('phases', []):
+              if phase.get('status') == 'in_progress':
+                  current_phase = phase['id']
+                  break
+
+          # Build status.json
+          status = {
+              'generated_at': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+              'project': {
+                  'name': project_config['project']['name'],
+                  'code': project_config['project']['code'],
+                  'current_phase': current_phase,
+                  'current_substep': '1.1 Requirement Gathering',
+                  'overall_progress': overall_progress,
+              },
+              'phases': phase_data,
+              'documents': documents,
+              'document_counts': status_counts,
+              'tasks': existing_status.get('tasks', []),
+              'approvals': existing_status.get('approvals', []),
+              'risks': existing_status.get('risks', []),
+              'compliance': {
+                  'iso27001_score': iso_score,
+                  'required_docs': len(iso_required),
+                  'approved_docs': iso_approved,
+              },
+              'velocity': {
+                  'avg_approve_days': existing_status.get('velocity', {}).get('avg_approve_days'),
+              },
+              'cr_vs_feature': {
+                  'cr_count': cr_count,
+                  'feature_count': feature_count,
+              },
+          }
+
+          with open(status_file, 'w', encoding='utf-8') as f:
+              json.dump(status, f, indent=2, ensure_ascii=False)
+
+          print(f"Status updated: {len(documents)} documents found")
+          print(f"Overall progress: {overall_progress * 100:.1f}%")
+          print(f"ISO27001 score: {iso_score * 100:.1f}%")
+          PYTHON_SCRIPT
+
+      - name: Commit updated status.json
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add dashboard/data/status.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: auto-update dashboard/data/status.json [skip ci]"
+            git push
+          fi

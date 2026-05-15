@@ -1,0 +1,90 @@
+# Jira Tracking Configuration for PT Leasing
+# ============================================
+# ตั้งค่า Jira integration สำหรับ sync document status กับ Jira issues
+
+provider: jira
+
+jira:
+  base_url: https://snocko-main.atlassian.net
+  project_key: PTL
+  board_url: https://snocko-main.atlassian.net/jira/software/projects/PTL/
+
+  # Authentication — use environment variables (never hardcode)
+  auth:
+    api_token: ${JIRA_API_TOKEN}   # Set in GitHub Secrets / .env
+    user_email: ${JIRA_USER_EMAIL} # Set in GitHub Secrets / .env
+
+  # Map document status to Jira issue status
+  status_map:
+    draft: "In Analysis"
+    in_review: "In Review"
+    approved: "Approved"
+    final: "Done"
+    rejected: "Rejected"
+    superseded: "Closed"
+
+  # Map document type to Jira issue type
+  issue_type_map:
+    new_feature: "Story"
+    change_request: "Change Request"
+    brd: "Story"
+    srs: "Story"
+    test_case: "Test"
+    architecture: "Task"
+    security_design: "Task"
+
+  # Epic link field (varies by Jira version)
+  epic_link_field: "customfield_10014"
+
+  # Custom fields mapping
+  custom_fields:
+    doc_id: "customfield_10100"        # Document ID field in Jira
+    doc_version: "customfield_10101"   # Document version
+    doc_path: "customfield_10102"      # Path to document in GitHub
+
+  # Issue transitions
+  transitions:
+    to_in_review: "Start Review"
+    to_approved: "Approve"
+    to_done: "Mark Done"
+    to_rejected: "Reject"
+
+# Sync configuration
+sync:
+  enabled: true
+  trigger: on_merge_to_main
+
+  # Which document statuses trigger a Jira update
+  sync_on_status:
+    - approved
+    - final
+    - rejected
+
+  # Post comment to Jira issue when doc is approved
+  post_comment: true
+  comment_template: |
+    Document has been {status} in GitHub.
+
+    - **Document**: {doc_title}
+    - **Version**: {version}
+    - **PR**: {pr_url}
+    - **Path**: {doc_path}
+
+    _Auto-synced by PT Leasing SDLC Framework_
+
+  # Create Jira issue if it doesn't exist
+  auto_create_issue: false
+
+# Webhook configuration (optional — for Jira → GitHub sync)
+webhook:
+  enabled: false
+  secret: ${JIRA_WEBHOOK_SECRET}
+  events:
+    - issue_updated
+    - issue_status_changed
+
+# Notification settings
+notifications:
+  on_sync_success: false
+  on_sync_failure: true
+  notify_email: bovornsak.pan@snocko-tech.com

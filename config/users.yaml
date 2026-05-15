@@ -1,0 +1,65 @@
+# Team Members Configuration for PT Leasing (PTL)
+# ================================================
+# เพิ่ม/แก้ไขสมาชิกทีมที่นี่ (PM เท่านั้น)
+
+users:
+  - name: Bovornsak Pan
+    email: bovornsak.pan@snocko-tech.com
+    github: bovornsakpan-arch
+    role: PM
+    jira_account_id: "62e758fa1323922c61e11d6b"
+    clickup_user_id: null
+    active: true
+    joined_date: 2026-05-15
+    timezone: Asia/Bangkok
+    contact:
+      primary: email
+      slack: null
+
+  - name: Orawan Nus
+    email: orawan.nus@snocko-tech.com
+    github: orawan-nus
+    role: BA
+    jira_account_id: "712020:e7f7dde6-2e83-4694-8537-3281d16be9b7"
+    clickup_user_id: null
+    active: true
+    joined_date: 2026-05-15
+    timezone: Asia/Bangkok
+    contact:
+      primary: email
+      slack: null
+
+  - name: Siriporn San
+    email: siriporn.san@snocko-tech.com
+    github: siriporn-san
+    role: SA
+    jira_account_id: "619ca612ef18ca0071105048"
+    clickup_user_id: null
+    active: true
+    joined_date: 2026-05-15
+    timezone: Asia/Bangkok
+    contact:
+      primary: email
+      slack: null
+
+  - name: Thamonwan San
+    email: thamonwan.san@snocko-tech.com
+    github: thamonwan-san
+    role: SA
+    jira_account_id: "615bda58c7bea4006932cd6a"
+    clickup_user_id: null
+    active: true
+    joined_date: 2026-05-15
+    timezone: Asia/Bangkok
+    contact:
+      primary: email
+      slack: null
+
+# ========================================================
+# Instructions for adding new members:
+# 1. Add entry following the format above
+# 2. Set role to one of: PM, BA, UXUI, SA, Techlead, Dev, Tester, TesterLead, Infra
+# 3. Get jira_account_id from Jira profile URL
+# 4. Update .github/CODEOWNERS if needed
+# 5. Commit with PM approval
+# ========================================================
