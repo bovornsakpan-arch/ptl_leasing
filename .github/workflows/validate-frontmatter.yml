@@ -45,7 +45,8 @@ jobs:
               'new_feature', 'change_request', 'brd', 'srs', 'gap_analysis',
               'impact_analysis', 'architecture', 'adr', 'test_case', 'test_strategy',
               'acceptance_criteria', 'security_design', 'validation', 'story',
-              'task', 'readiness', 'handoff', 'user_manual', 'design', 'requirements'
+              'task', 'readiness', 'handoff', 'user_manual', 'design', 'requirements',
+              'signoff', 'verification', 'iso27001', 'manual'
           }
 
           # Required fields for all docs with frontmatter
