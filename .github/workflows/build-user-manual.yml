@@ -57,6 +57,7 @@ jobs:
         working-directory: docs/user-manual
         run: |
           VERSION="${{ inputs.version || '1.0' }}"
+          mike delete --push latest 2>/dev/null || true
           mike deploy --push --update-aliases "$VERSION" latest
           mike set-default --push latest
 
