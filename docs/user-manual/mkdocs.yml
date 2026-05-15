@@ -19,8 +19,6 @@ theme:
     - content.code.copy
 plugins:
   - search
-  - mike:
-      version_selector: true
 nav:
   - หน้าแรก: index.md
   - เริ่มต้นใช้งาน: getting-started.md
