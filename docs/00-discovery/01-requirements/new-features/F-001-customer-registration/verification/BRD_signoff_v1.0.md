@@ -5,6 +5,7 @@ project: ptl_leasing
 type: signoff
 version: "1.0.0"
 status: approved
+owner: bovornsak.pan@snocko-tech.com
 feature_id: "F-001"
 document_ref: "PTL-F001-BRD"
 document_version: "1.0.0"
