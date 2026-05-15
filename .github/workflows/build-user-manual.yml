@@ -8,16 +8,9 @@ on:
       - 'docs/user-manual/**'
 
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to deploy (e.g. 1.0)'
-        required: false
-        default: 'latest'
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   build-manual:
@@ -28,7 +21,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Required for mike versioning
           token: ${{ secrets.DASHBOARD_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
@@ -41,25 +33,16 @@ jobs:
           pip install \
             "mkdocs-material<9.6" \
             mkdocs \
-            mike \
             mkdocs-minify-plugin
 
-      - name: Configure Git for mike deploy
+      - name: Configure Git
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-      - name: Build MkDocs site
+      - name: Deploy to GitHub Pages
         working-directory: docs/user-manual
-        run: mkdocs build
-
-      - name: Deploy with mike (versioned)
-        working-directory: docs/user-manual
-        run: |
-          VERSION="${{ inputs.version || '1.0' }}"
-          mike delete --push latest 2>/dev/null || true
-          mike deploy --push --update-aliases "$VERSION" latest
-          mike set-default --push latest
+        run: mkdocs gh-deploy --force --remote-branch gh-pages
 
       - name: Upload site artifact
         uses: actions/upload-artifact@v4
