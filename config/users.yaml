@@ -7,6 +7,7 @@ users:
     email: bovornsak.pan@snocko-tech.com
     github: bovornsakpan-arch
     role: PM
+    secondary_roles: [BA]
     jira_account_id: "62e758fa1323922c61e11d6b"
     clickup_user_id: null
     active: true

@@ -66,10 +66,12 @@ jobs:
 
           # Find user's role by GitHub username
           pr_author_role = None
+          pr_author_secondary_roles = []
           pr_author_email = None
           for user in users_data.get('users', []):
               if user.get('github', '').lower() == pr_author.lower():
                   pr_author_role = user.get('role')
+                  pr_author_secondary_roles = user.get('secondary_roles', [])
                   pr_author_email = user.get('email')
                   break
 
@@ -78,17 +80,21 @@ jobs:
               print("Allowing PR — please add this user to config/users.yaml")
               sys.exit(0)
 
-          print(f"PR Author: {pr_author} ({pr_author_role} — {pr_author_email})")
+          all_roles = [pr_author_role] + pr_author_secondary_roles
+          print(f"PR Author: {pr_author} (roles: {', '.join(all_roles)} — {pr_author_email})")
 
           # PM has full access
           if pr_author_role == 'PM':
               print("PM role detected — full access granted.")
               sys.exit(0)
 
-          # Get editable paths for this role
-          role_config = roles_data.get('roles', {}).get(pr_author_role, {})
-          editable_paths = role_config.get('editable_paths', [])
+          # Get editable paths for all roles (primary + secondary)
+          editable_paths = []
+          for r in all_roles:
+              role_config = roles_data.get('roles', {}).get(r, {})
+              editable_paths.extend(role_config.get('editable_paths', []))
           protected_files = roles_data.get('protected_files', [])
+          editable_paths = list(set(editable_paths))  # deduplicate
 
           def path_matches(filepath, patterns):
               """Check if filepath matches any of the glob patterns."""
@@ -121,13 +127,13 @@ jobs:
                   violations.append(filepath)
 
           if violations:
-              print(f"\nPERMISSION VIOLATION: {pr_author} ({pr_author_role}) does not have permission to edit:")
+              print(f"\nPERMISSION VIOLATION: {pr_author} (roles: {', '.join(all_roles)}) does not have permission to edit:")
               for v in violations:
                   print(f"  - {v}")
               print(f"\nYou don't have permission. Please contact PM ({pm_email})")
               print("Or ask the PM to make these changes directly.")
               sys.exit(1)
           else:
-              print(f"\nAll {len(changed_files)} changed file(s) are within {pr_author_role}'s permissions.")
+              print(f"\nAll {len(changed_files)} changed file(s) are within allowed permissions for roles: {', '.join(all_roles)}.")
               print("Role validation PASSED")
           PYTHON_SCRIPT
