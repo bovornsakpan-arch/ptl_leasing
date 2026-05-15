@@ -56,7 +56,7 @@ jobs:
       - name: Deploy with mike (versioned)
         working-directory: docs/user-manual
         run: |
-          VERSION="${{ inputs.version || 'latest' }}"
+          VERSION="${{ inputs.version || '1.0' }}"
           mike deploy --push --update-aliases "$VERSION" latest
           mike set-default --push latest
 
